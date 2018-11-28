@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>date</title> 
+    <script type="text/javascript">
+        function doyear(){
+            var select = document.getElementById("year");
+            var thisYear = new Date().getFullYear();
+            for(var i=1900;i<=thisYear;i++){
+                var option = document.createElement("option");
+                option.value = i;
+                option.innerText = i;
+                select.appendChild(option);
+            }
+        }
+        
+        function domoth(){
+            var select = document.getElementById("month");
+            for(var i=1;i<=12;i++){
+                var option = document.createElement("option");
+                option.value = i;
+                option.innerText = i;
+                select.appendChild(option);
+            }
+        }
+        
+        function doday(){
+            var select = document.getElementById("day"); 
+            var selectYear = parseInt(year.options[year.selectedIndex].value);
+            var selectMonth = parseInt(month.options[month.selectedIndex].value); 
+            var date = new Date(selectYear,selectMonth,0);
+            
+            for(var i=1;i<=date.getDate();i++){
+                var option = document.createElement("option");
+                option.value = i;
+                option.innerText = i;
+                select.appendChild(option);
+            }
+        }
+        
+        function deleteOldChildNodes(){
+            var day = document.getElementById("day");
+            var node=day.firstChild;
+            var tmpNode;
+            while(node!=day.lastChild){
+                tmpNode = node.nextSibling;
+                day.removeChild(node);
+                node = tmpNode;
+            }
+            day.removeChild(day.lastChild);
+        }
+        
+        function pageInit(){
+            doyear();
+            domoth();
+            doday();
+            year.onchange = function(){deleteOldChildNodes();doday();};
+            month.onchange = function(){deleteOldChildNodes();doday();};
+        }
+    </script>
+    
+</head>
+<body style="text-align: center" onload="pageInit()">
+    <table width="70%" frame="border">
+        <tr>
+        <td>生日</td>
+        <td>
+            <select name="year" id="year"></select>年
+            <select name="month" id="month"></select>月
+            <select name="day" id="day"></select>日
+        </td>
+        </tr>
+  
+    </table>
+</body>
+ 
+</html>

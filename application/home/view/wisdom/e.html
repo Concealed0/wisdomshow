@@ -1,0 +1,202 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>智慧果园</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">   <!-- 在IE运行最新的渲染模式 -->
+    <link href="../../../favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <!-- 引入css文件-->
+    <link rel="stylesheet" type="text/css" href="../../../template/css/css.css">
+    <!-- 引入 echarts.js -->
+    <script src="../../../static/echarts.js"></script>
+    <!-- 引入 echarts.js -->
+    <script src="../../../static/jQuery/jquery-3.3.1.min.js"></script>    
+    <script>
+         
+       </script>
+</head>
+<body>
+        
+    <div>
+        <span>
+            <font class="header">智慧农业数据 </font>{include file="wisdom/header"/}
+        </span>
+    </div>
+     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div style="height:410px;min-height:100px;margin:0 auto;" id="main"></div> 
+    <h1 id="meta"></h1>
+    <div id="pid"></div>
+    {include file="wisdom/footer"/}
+</body>
+<script type="text/javascript" id="data">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: []
+        },
+        dataZoom: [
+             {
+                 type: 'slider',    //支持鼠标滚轮缩放
+                 start: 0,            //默认数据初始缩放范围为10%到90%
+                 end: 100
+             },
+             {
+                 type: 'inside',    //支持单独的滑动条缩放
+                 start: 0,            //默认数据初始缩放范围为10%到90%
+                 end: 100
+             }
+        ],
+        tooltip: {},
+        legend: { //图表上方的类别显示
+            show:true,
+            data:['土壤湿度（%）','温度（℃）','电导率（S/m）']
+        },
+        color: [
+               '#FF3333',    //土壤湿度曲线颜色
+               '#53FF53',    //温度曲线颜色
+               '#B15BFF',    //电导率曲线颜色     
+        ],
+        xAxis: {
+            type : 'category',
+            data: []
+        },
+        yAxis: [{
+                        //第一个（左边）Y轴，yAxisIndex为0
+                         type : 'value',
+                         name : '温度/湿度',
+                         /* max: 120,
+                         min: -40, */
+                         axisLabel : {
+                             formatter: '{value} ℃'    //控制输出格式
+                         }
+                     },
+                     {
+                        //第二个（右边）Y轴，yAxisIndex为1
+                         type : 'value',
+                         name : '电导率',
+                         scale: true,
+                         axisLabel : {
+                             formatter: '{value} hPa'
+                         }
+                     }],
+        series: [{
+            name: '土壤湿度（%）',
+            type: 'line',
+            symbol:'emptycircle',    //设置折线图中表示每个坐标点的符号；emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形       
+            data: []
+        },
+        {
+            name: '温度（℃）',
+            type: 'line',
+            symbol:'circle',    //标识符号为实心圆   //设置折线图中表示每个坐标点的符号；emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形       
+            data: []
+        },
+        {
+            name: '电导率（S/m）',
+            type: 'line',
+            yAxisIndex: 1,        //与第二y轴有关
+            symbol:'emptyrect',    //设置折线图中表示每个坐标点的符号；emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形       
+            data: []
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.showLoading();
+  //  myChart.setOption(option);
+  var tems=[];        //土壤湿度
+  var tem=[];         //时间
+  var c=[];        //温度数组
+  var s=[];        //电导率数组
+  var a=[];           //名称
+  var meta=[];
+  var pid=[];
+  $.ajax({
+      type:'get',
+      url:'__URL__/ccc',  //数据传输的控制器方法
+      success:function(result){
+          console.log(result);
+          console.log(result.data[4]);
+          if (result != null) {
+            console.log(result.data);
+            //判断data数据
+            if (result.data != null && result.data.length > 0) {
+                for(var i=0;i<result.data.length;i++){                       
+                    if(result.data[i].property=="土壤湿度"){ //挨个取出温度、湿度、压强等值并填入前面声明的温度、湿度、压强等数组
+                        tems.push(result.data[i].value); 
+                        tem.push(result.data[i].timestamp);                       
+                    } 
+                    else if(result.data[i].property=="土壤温度"){
+                        c.push(result.data[i].value); 
+                    }
+                    else{
+                        s.push(result.data[i].value);
+                    }      
+                }
+            }
+            else{
+                alert("图表请求data数据为空，可能服务器暂未录入的观测数据，您可以稍后再试！");
+                myChart.hideLoading();
+            }
+
+            //判断meta数据获取情况
+            if (result.meta != null && result.meta.length > 0) {
+                for(var i=0;i<result.meta.length;i++){                                         
+                        a.push(result.meta[i].device_model);
+                        meta.push(result.meta[i].business_name+"--"+result.meta[i].site_name+"--"+result.meta[i].device_name);
+                        pid.push(result.meta[i].business_pid+"--"+result.meta[i].site_pid+"--"+result.meta[i].device_pid);
+                                          
+                }
+                console.log(a);
+                document.getElementById("meta").innerHTML=meta;
+                document.getElementById("pid").innerHTML=pid;
+            }
+            else{
+                alert("图表请求meta数据为空，可能服务器暂未录入的观测数据，您可以稍后再试！");
+                myChart.hideLoading();
+            }
+
+
+                myChart.hideLoading();//隐藏加载动画
+                myChart.setOption({
+                title: {
+                    text: a
+                },
+                xAxis:{
+                    data:tem
+                },
+                series:[
+                    {
+                        name: '土壤湿度（%）',
+                        data: tems
+                    },{
+                        name: '温度（℃）',
+                        data: c
+                    },{                               
+                        name: '电导率（S/m）',
+                        data: s
+                    }
+                ]
+                });
+        }
+        else {
+             //返回的数据为空时显示提示信息
+             alert("图表请求数据为空，可能服务器暂未录入的观测数据，您可以稍后再试！");
+             myChart.hideLoading();
+         }
+      },
+      error: function () {
+                alert("数据加载失败！");
+                myChart.hideLoading(); 
+            }
+     });
+     myChart.setOption(option);    //载入图表
+     
+</script>
+</html>
+
+
+
+

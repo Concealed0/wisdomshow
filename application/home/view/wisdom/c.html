@@ -1,0 +1,100 @@
+var analogChart = echarts.init(document.getElementById('energy-efficiency'));    
+    
+function loadAnalogData() {
+       var url = '<%=basePath %>views/Singlestation/getUnbalanceData?groupId=' + $("#selectCircuit").val();
+       $.ajax({
+           type: "GET",
+           url: url,
+           success: function(data){
+               if(data.status == 1000) {
+                   analogChart.clear();
+                   unbalanceChart.clear();//清空页面的中的数据，但不初始化echarts
+                   loadAnalogChart(data, "");
+               }
+           }
+       });
+   } 
+   function getASeries(name,seriesData){
+       return {
+        name: name,
+        type:'line',
+        label: {
+            normal: {
+                show: true
+            }
+        },
+        data:seriesData
+    };
+   }
+   function loadAnalogChart(data, title) {
+       var dataUnits = data.dataUnits;
+       var xAxis = [];
+       var series = [];
+       var legend = [];
+       for(var i = 0; i < dataUnits.length; i++){
+           var dataUnit = dataUnits[i];
+           var seriesData = [];
+           
+           if(dataUnit.value != null){
+               for(var j = 0; j < dataUnit.value.length; j++) {
+                   if(i == 1){
+                       xAxis.push(dataUnit.value[j].time.replace(' ', '\n'));
+                   }
+                   seriesData.push(dataUnit.value[j].value);
+               }
+           } 
+           series.push(getASeries(dataUnit.name, seriesData));
+           legend.push(dataUnit.name);
+       }   		
+       
+       loadUnbalanceChart(series, xAxis);
+       var chartOption = {
+               color: ['#F3C200', '#26C281', '#E43A45', '#3398DB'],
+               title : {
+                      text: "三相电流曲线",  
+                      x:'left'
+                  },
+                  legend: {
+                      left:'center',
+                      top:24,
+                      data: legend
+                  },
+               tooltip : {
+                   trigger: 'axis',
+               },
+               toolbox: {
+                   show: false,
+                   feature: {
+                       dataView: {show: true, readOnly: false},
+                       magicType: {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                       restore: {show: true},
+                       saveAsImage: {show: true}
+                   }
+               },
+               grid: {
+                   top: '18%',
+                   left: '3%',
+                   right: '4%',
+                   bottom: '3%',
+                   containLabel: true
+               },
+               xAxis : [
+                   {
+                       type : 'category',
+                       data : xAxis,
+                       axisTick: {
+                           alignWithLabel: true
+                       }
+                   }
+               ],
+               yAxis : [
+                   {
+                       type : 'value'
+                   }
+               ],
+               series : series
+           };
+       analogChart.setOption(chartOption);
+       analogChart.resize(); //重置echarts图形的大小
+       analogChart.hideLoading();
+   }

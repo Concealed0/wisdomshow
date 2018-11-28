@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>无标题文档</title>
+</head>
+<body>
+        <ul>
+                <li>
+                    <a href="">[社会]</a>黄河变清调查:每年泥沙减少7亿吨 大洪水几率增加<a href=""></a><span>2017-10-12 18:09:00</span>
+                </li>
+                <li>
+                    <a href="">[社会]</a>谷歌推出阿尔法围棋工具 要让机器教人类下棋<a href=""></a><span>2017-10-12 18:09:00</span>
+                </li>
+        </ul>
+</body>
+<script language="JavaScript">
+    var Ocontent = document.getElementById('content') ;
+    var oli = "";
+    var i = 0;
+    ajax({
+        type:'get',
+        url:'http://c.3g.163.com/nc/article/headline/T1348647853363/0-140.html',
+        data:'',
+        success: function (msg){
+            //console.log(msg);//typeof (msg)
+           var data = JSON.parse(msg);
+           //console.log(data);
+           var oUL = document.createElement('ul');
+           for(var j = 0;j<data.length;j++) {
+               oli += '<li>' +
+                   '<a href="#" class="title">'+data[j].title+'</a>' +
+                   '<span style="">2017-10-12 18:09:00</span>' +
+                   '</li>';
+           }
+            oUL.innerHTML=oli;
+            Ocontent.appendChild(oUL);
+        },
+        error: function(status) {
+            alert(status);
+        }
+    });//花括号中是对象
+        function ajax(mJson) {
+        var type = mJson.type;
+        var url = mJson.url;
+        var data = mJson.data;
+        var success = mJson.success;
+        var error = mJson.error;
+
+        var xmhr = new XMLHttpRequest();
+        xmhr.open(type,url,true);
+        xmhr.send();
+        xmhr.onreadystatechange = function () {
+            if(xmhr.readyState == 4){
+                if(xmhr.status == 200){
+                    success&&success(xmhr.responseText);
+                }else {
+                    error&&error(xmhr.status);
+                }
+            }
+        }
+        }
+</script>   
+</html>

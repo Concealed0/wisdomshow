@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>智慧农业</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">   <!-- 在IE运行最新的渲染模式 -->
+    <link href="../../../favicon.ico" type="image/x-icon" rel="shortcut icon">
+    <!-- 引入css文件-->
+    <link rel="stylesheet" type="text/css" href="../../../template/css/css.css">
+    <!-- 引入 echarts.js -->
+    <script src="../../../static/echarts.js"></script>
+    <!-- 引入 echarts.js -->
+    <script src="../../../static/jQuery/jquery-3.3.1.min.js"></script>    
+</head>
+<body>
+        
+    <div>
+        <span>
+            <font class="header">智慧农业数据 </font>{include file="wisdom/header"/}
+        </span>
+    </div>
+    <div class="meta_s">
+            <div class="meta_zhong">
+                    <a href="__URL__/../Pingdu/scene">A0 气象站</a>
+                    <a href="__URL__/../Pingdu/pingdu">A1 对照观测点</a>
+                    <a href="__URL__/../Pingdu/monitor">A2 地膜监测点</a>
+                    <a href="__URL__/../Pingdu/monitora">A3 无地膜监测点</a>
+            </div>
+            <div class="meta_zhongaa">
+                <h5>最多查询五天记录：
+                    <input class="form-control" id="start"  type="date" autocomplete="off"/>
+                    <input class="form-control" id="end"  type="date" autocomplete="off"/>
+                    <button type="button" onclick="Submit()">查询</button>
+                </h2>
+            </div>
+    </div>
+
+     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div style="height:410px;min-height:100px;margin:0 auto;" id="main"></div> 
+    <h1 id="meta"></h1>   
+    <div>检测名称</div>
+    <div id="device"></div>
+    {include file="wisdom/footer"/}
+</body>
+<script type="text/javascript" id="data">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: []
+        },
+        dataZoom: [
+             {
+                 type: 'slider',    //支持鼠标滚轮缩放
+                 start: 0,            //默认数据初始缩放范围为10%到90%
+                 end: 100
+             },
+             {
+                 type: 'inside',    //支持单独的滑动条缩放
+                 start: 0,            //默认数据初始缩放范围为10%到90%
+                 end: 100
+             }
+        ],
+        tooltip: {
+            trigger: 'axis', //坐标轴触发提示框，多用于柱状、折线图中
+        },
+        legend: { //图表上方的类别显示
+            show:true,
+            data:['电导率','土壤湿度','土壤温度','土壤湿度a','土壤温度a']
+        },
+        color: [
+               '#FF3333',    //土壤湿度曲线颜色
+               '#68CFE8',    //雨量图颜色
+               '#FFDC35',
+               '#53FF53',
+               '#B15BFF'     //压强图颜色
+                  
+        ],
+        xAxis: {
+            type : 'category',
+            data: []
+        },
+        yAxis: [{
+                        //第一个（左边）Y轴，yAxisIndex为0
+                         type : 'value',
+                         name : '电导率/土壤温度/土壤湿度',
+                         /* max: 120,
+                         min: -40, */
+                         axisLabel : {
+                             formatter: '{value}'    //控制输出格式
+                         }
+                     },
+                     {
+                        //第二个（右边）Y轴，yAxisIndex为1
+                         type : 'value',
+                         name : '土壤温湿度',
+                         scale: true,
+                         axisLabel : {
+                             formatter: '{value} '
+                         }
+                     }],
+        series: [{
+            name: '电导率',
+            type: 'line',
+            symbol:'emptycircle',    //设置折线图中表示每个坐标点的符号；emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形       
+            data: []
+        },
+        {
+            name: '土壤湿度',
+            type: 'line',
+            //yAxisIndex: 1, 
+            symbol:'circle',    //标识符号为实心圆   //设置折线图中表示每个坐标点的符号；emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形       
+            data: []
+        },
+        {
+            name: '土壤温度',
+            type: 'line',
+           // yAxisIndex: 1,        //与第二y轴有关
+            symbol:'circle',    //设置折线图中表示每个坐标点的符号；emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形       
+            data: []
+        },
+        {
+            name: '土壤湿度a',
+            type: 'line',
+            yAxisIndex: 1,        //与第二y轴有关
+            symbol:'emptyrect',    //设置折线图中表示每个坐标点的符号；emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形       
+            data: []
+        },
+        {
+            name: '土壤温度a',
+            type: 'line',
+            yAxisIndex: 1,        //与第二y轴有关
+            symbol:'emptyrect',    //设置折线图中表示每个坐标点的符号；emptycircle：空心圆；emptyrect：空心矩形；circle：实心圆；emptydiamond：菱形       
+            data: []
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+   // myChart.showLoading();
+  //  myChart.setOption(option);
+  function Submit() {
+  var tim=[];         //时间
+  var ddl=[];        //电导率
+  var trwd=[];
+  var trsd=[];
+  var trwda=[];
+  var trsda=[];
+
+
+  var a=[];           //名称
+  var meta=[];
+  var device=[];
+  var start = $("#start").val();    // 获取id为username的<input>框数据
+  var end = $("#end").val();    // 获取id为password的<input>框数据
+  $.ajax({
+      type:'post',
+      async : true, 
+      url:'__URL__/alldata',  //数据传输的控制器方法
+      data:{'stat':'95464844',"start": start, "end": end},
+      success:function(result){
+          console.log(result);
+          //console.log(result.data[4]);
+          if (result != null) {
+            console.log(result.data);
+            //判断data数据
+            if (result.data != null && result.data.length > 0) {
+                console.log(result.data.length);
+                for(var i=0;i<result.data.length;i++){
+                    for(var j=0;j<result.data[i].length;j++){
+                        console.log(result.data[i].length);
+                        if(result.data[i][j].device_pid==68227322){    //电导率                      
+                                  if(result.data[i][j].property=="电导率"){ //挨个取出温度、湿度、压强等值并填入前面声明的温度、湿度、压强等数组
+                                         ddl.push(result.data[i][j].value);
+                                         tim.push(result.data[i][j].timestamp);                  
+                                  } 
+                                  else if(result.data[i][j].property=="土壤湿度"){
+                                         trsd.push(result.data[i][j].value); 
+                                  }
+                                  else {          
+                                         trwd.push(result.data[i][j].value);
+                                  }       
+                        }
+                        else {                       
+                                  if(result.data[i][j].property=="土壤湿度"){ //挨个取出温度、湿度、压强等值并填入前面声明的温度、湿度、压强等数组
+                                         trsda.push(result.data[i][j].value);                  
+                                  } 
+                                  else {          
+                                         trwda.push(result.data[i][j].value);
+                                  }      
+                            } 
+                    }      
+                }
+            }
+            else{
+                alert("图表请求data数据为空，可能服务器暂未录入的观测数据，您可以稍后再试！");
+                myChart.hideLoading();
+            }
+
+            //判断meta数据获取情况
+            if (result.meta != null && result.meta.length > 0) {
+                for(var i=0;i<result.meta.length;i++){                                     
+                    for(var j=0;j<result.meta[i].length;j++){
+                        device.push(result.meta[i][j].device_name+"-"+result.meta[i][j].device_model);
+                    }                    
+                }
+                //图标左侧数据
+                a.push(result.meta[0][0].site_name);
+                //图标下侧数据
+                meta.push(result.meta[0][0].business_name+"--"+result.meta[0][0].site_name);
+                console.log(a);
+                console.log(result.meta.length);
+                console.log(result.meta[1].length);
+                console.log(result.meta[1][0].device_model);
+                document.getElementById("meta").innerHTML=meta;
+                //document.getElementById("pid").innerHTML=pid;
+                document.getElementById("device").innerHTML=device;
+            }
+            else{
+                alert("图表请求meta数据为空，可能服务器暂未录入的观测数据，您可以稍后再试！");
+                myChart.hideLoading();
+            }
+
+
+                myChart.hideLoading();//隐藏加载动画
+                myChart.setOption({
+                title: {
+                    text: a
+                },
+                xAxis:{
+                    data:tim
+                },
+                series:[
+                    {
+                        name: '电导率',
+                        data: ddl
+                    },{
+                        name: '土壤湿度',
+                        data: trsd
+                    },{                               
+                        name: '土壤温度',
+                        data: trwd
+                    },{                               
+                        name: '土壤湿度a',
+                        data: trsda
+                    },{                               
+                        name: '土壤温度a',
+                        data: trwda
+                    }
+                ]
+                });
+        }
+        else {
+             //返回的数据为空时显示提示信息
+             alert("图表请求数据为空，可能服务器暂未录入的观测数据，您可以稍后再试！");
+             myChart.hideLoading();
+         }
+      },
+      error: function () {
+                alert("数据加载失败！");
+                myChart.hideLoading(); 
+            }
+     });
+  }
+     myChart.setOption(option);    //载入图表
+     
+</script>
+</html>
+
+
+
+

@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>无标题文档</title>
+    <!-- 引入 echarts.js -->
+    <script src="/static/echarts.js"></script>
+    <!-- 引入 jquery.js -->
+    <script src="/static/jQuery/jquery-3.3.1.min.js"></script>
+    
+    <style>
+        .m_student_name{
+            float: left;
+            color: #2aabd2;
+            font-size: 20px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+        <script>
+                $.ajax({
+                url : 'api/wisdom.php',
+                success : function(data){
+                    var msg = JSON.parse(data);
+                    var wisdom_data=msg.status.wisdomdata;
+                    for(var j = 0;j<wisdom_data.length;j++) {
+                       oli += '<li>' +
+                           '<a href="#" class="title">'+wisdom_data[j].value+'</a>' +
+                           '<span style="">2017-10-12 18:09:00</span>' +
+                           '</li>';
+                   }
+                }
+            }); 
+            </script>
+    <foreach name="wisdom_data" item="data">
+        <div class="m_content_1">
+            <div class="m_student_name">学生姓名:{$data.value}</div>
+        </div>
+    </foreach>
+   <!-- <p>网站域名:<span style="color:red">{$wisdom}</span></p> -->
+</body>
+</html>
+
+
+
+
