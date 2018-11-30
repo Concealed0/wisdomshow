@@ -27,11 +27,11 @@ class Index extends Controller
     public function demo()
   {
     $config = [
-      'type'=>'mysql',
-      'hostname'=>'localhost',
-      'username'=>'root',
-      'password'=>'song233',
-      'database'=>'student',
+      'type'=>'*****',
+      'hostname'=>'*****',
+      'username'=>'*****',
+      'password'=>'*****',
+      'database'=>'*****',
     ];
     //1.获取数据库的连接实例/对象
     $link = Db::connect($config);
