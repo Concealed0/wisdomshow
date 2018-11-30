@@ -30,3 +30,6 @@
 六、本人小白，大三普通二本大学，热爱软件开发，非常喜欢通过编程带来的开发魅力！大学期间用C++,C#做过学生管理系统，大二用js开发微信小程序，大三用PHP做网站后台，本文是用PHP做的后台逻辑。有没有哪个公司中意我的，吃苦耐劳，不要求工资，社会主义下的三好青年，下面是我微信哦（好吧，我就是试试，万一有伯乐呢）
 
 ![Image text]https://raw.githubusercontent.com/Concealed0/wisdomshow/master/images/wx.jpg
+
+
+
