@@ -8,6 +8,7 @@
 界面如图所示
 ![Image text](https://raw.githubusercontent.com/Concealed0/wisdomshow/master/images/show1.png)
 ![Image text](https://raw.githubusercontent.com/Concealed0/wisdomshow/master/images/show2.png)
+
 # 三、采用的技术
 1、搭建的环境
 服务器：Wisdoms 10 +nginx/1.12.2+PHP/7.2.6+mysql8.0
