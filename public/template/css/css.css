@@ -1,0 +1,32 @@
+/* 智慧农业头css*/
+
+.header{
+    font-size:30px;
+    display:inline-block; 
+    font-weight:bolder;
+    
+}
+.w1212{
+	width: 1212px;
+}
+.m_t5{
+   
+    display:inline-block; 
+    margin-left: 15px;
+    height:50px;
+}
+.meta_s{
+    display: flex;
+}
+.meta_zhong{ 
+    margin-left: 100px;
+    height:25px;
+    font-size:20px;
+    font-weight:bolder;
+}
+.meta_zhonga{
+    margin-left: 500px;
+}
+.meta_zhongaa{
+    margin-left: 200px;
+}
