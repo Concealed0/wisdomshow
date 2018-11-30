@@ -11,17 +11,17 @@
 
 return [
     // 数据库类型
-    'type'            => 'mysql',
+    'type'            => '****',
     // 服务器地址
     'hostname'        => '******',
     // 数据库名
-    'database'        => 'wisdom',
+    'database'        => '*****',
     // 用户名
-    'username'        => 'root',
+    'username'        => '****',
     // 密码
     'password'        => '*****',
     // 端口
-    'hostport'        => '3306',
+    'hostport'        => '****',
     // 连接dsn
     'dsn'             => '',
     // 数据库连接参数
