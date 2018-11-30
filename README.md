@@ -8,7 +8,9 @@
 界面如图所示
 
 ![Image text](https://raw.githubusercontent.com/Concealed0/wisdomshow/master/images/show1.png)
+
 ![Image text](https://raw.githubusercontent.com/Concealed0/wisdomshow/master/images/show2.png)
+
 
 
 # 三、采用的技术
